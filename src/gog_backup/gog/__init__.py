@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from .api import GogApi
+from .downloads import get_downloads
 from .env import (
     GOG_API_COOKIES,
     GOG_LANGUAGES,
@@ -17,4 +18,5 @@ __all__ = [
     'GOG_LANGUAGES',
     'GOG_PLATFORMS',
     'GOG_ARCHIVE_DIR',
+    'get_downloads',
 ]

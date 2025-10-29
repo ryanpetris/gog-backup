@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
 
-from .gog.api import GogApi
-from .gog.env import GOG_LANGUAGES, GOG_PLATFORMS
+from rich.progress import Progress, TransferSpeedColumn, TextColumn
+
+from .common import RichDownloadTracker, BlockingThreadPool
+from .gog import get_downloads, GogApi
+
 
 def gog_backup():
-    licenses = GogApi.get_licenses()
+    pool = BlockingThreadPool()
 
-    for item in licenses:
-        game = GogApi.get_game_details(item)
+    columns = (
+        TextColumn("{task.fields[title]}"),
+        TextColumn("{task.fields[subtitle]}"),
+        TextColumn("{task.fields[type]}"),
+        TextColumn("{task.fields[platform]}"),
+        TextColumn("{task.fields[language]}"),
+        *Progress.get_default_columns(),
+        TransferSpeedColumn(),
+    )
 
-        if not game:
-            continue
-
-        downloads = [x for x in game.downloads if x.language in GOG_LANGUAGES or not x.language]
-        downloads = [x for x in downloads if x.platform in GOG_PLATFORMS or not x.platform]
-
-        for download in downloads:
-            GogApi.download_file(download)
+    with Progress(*columns) as p:
+        for download in get_downloads():
+            pool.submit(GogApi.download_file, download, RichDownloadTracker(p))

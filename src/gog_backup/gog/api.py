@@ -10,7 +10,7 @@ import yaml
 
 from .env import GOG_ARCHIVE_DIR, GOG_API_COOKIES
 from .types import GogDownload, GogGame
-from src.gog_backup.common import http_send, http_send_raw
+from ..common import http_send, http_send_raw, DownloadTracker, DummyDownloadTracker
 
 
 class GogApi:
@@ -59,10 +59,16 @@ class GogApi:
         return game
 
     @classmethod
-    def download_file(cls, download: GogDownload):
+    def download_file(cls, download: GogDownload, tracker: DownloadTracker = None):
         if not GOG_ARCHIVE_DIR:
             print("Please set GOG_ARCHIVE_DIR environment variable")
             exit(1)
+
+        pprint = lambda x: None
+
+        if tracker is None:
+            tracker = DummyDownloadTracker()
+            pprint = lambda x: print(x)
 
         temp_path = os.path.join(GOG_ARCHIVE_DIR, '.tmp')
         download_path = os.path.join(GOG_ARCHIVE_DIR, download.storage_path)
@@ -81,13 +87,13 @@ class GogApi:
                     if download.cd_key and "cdKey" not in data:
                         if download.file_type:
                             if download.name == "DLC" and download.game_subtitle:
-                                print(
+                                pprint(
                                     f"Updating CD Key for {download.file_type} {download.game_subtitle} (Game: {download.game_title}, Language: {download.language}, Platform: {download.platform})...")
                             else:
-                                print(
+                                pprint(
                                     f"Updating CD Key for {download.file_type} {download.name} (Game: {download.game_title}, Language: {download.language}, Platform: {download.platform})...")
                         else:
-                            print(
+                            pprint(
                                 f"Updating CD Key for {download.name} (Game: {download.game_title}, Language: {download.language}, Platform: {download.platform})...")
 
                         data["cdKey"] = download.cd_key
@@ -107,20 +113,32 @@ class GogApi:
 
         if download.file_type:
             if download.name == "DLC" and download.game_subtitle:
-                print(
+                pprint(
                     f"Downloading {download.file_type} {download.game_subtitle} (Game: {download.game_title}, Language: {download.language}, Platform: {download.platform})...")
             else:
-                print(
+                pprint(
                     f"Downloading {download.file_type} {download.name} (Game: {download.game_title}, Language: {download.language}, Platform: {download.platform})...")
         else:
-            print(
+            pprint(
                 f"Downloading {download.name} (Game: {download.game_title}, Language: {download.language}, Platform: {download.platform})...")
 
         download_uuid = str(uuid4())
 
-        with open(os.path.join(temp_path, download_uuid), 'wb') as file:
-            for chunk in response.iter_content(chunk_size=1024 * 1024 * 10):
-                file.write(chunk)
+        tracker_fields = {
+            'name': download.name,
+            'total': int(response.headers.get('content-length', 0)),
+            'title': download.game_title or '',
+            'subtitle': download.game_subtitle or '',
+            'language': download.language or '',
+            'platform': download.platform or '',
+            'type': download.file_type or '',
+        }
+
+        with tracker(**tracker_fields):
+            with open(os.path.join(temp_path, download_uuid), 'wb') as file:
+                for chunk in response.iter_content(chunk_size=1024 * 512):
+                    tracker.advance(len(chunk))
+                    file.write(chunk)
 
         response.close()
 

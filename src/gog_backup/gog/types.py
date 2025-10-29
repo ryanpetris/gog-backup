@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-
 from dataclasses import dataclass
 from typing import List, Mapping
 
