@@ -2,14 +2,21 @@
 
 from __future__ import annotations
 
+from typing import Any, Dict, List, Mapping, Union
+
 import requests
 import requests.models
 import requests.sessions
 
-from typing import Any, Dict, List, Mapping, Union
 
-
-def http_send_raw(url: str, method: str = None, params: Dict[str, str] = None, body: Mapping = None, headers: Dict[str, str] = None, stream: bool = False) -> requests.models.Response:
+def http_send_raw(
+        url: str,
+        method: str = None,
+        params: Dict[str, str] = None,
+        body: Mapping = None,
+        headers: Dict[str, str] = None,
+        stream: bool = False
+) -> requests.models.Response:
     if not method:
         method = 'GET'
 
@@ -21,7 +28,13 @@ def http_send_raw(url: str, method: str = None, params: Dict[str, str] = None, b
     return response
 
 
-def http_send(url: str, method: str = None, params: Dict[str, str] = None, body: Mapping = None, headers: Dict[str, str] = None) -> Union[Mapping, List[Any], Any]:
+def http_send(
+        url: str,
+        method: str = None,
+        params: Dict[str, str] = None,
+        body: Mapping = None,
+        headers: Dict[str, str] = None
+) -> Union[Mapping, List[Any], Any]:
     response = http_send_raw(url, method=method, params=params, body=body, headers=headers)
 
     return response.json()

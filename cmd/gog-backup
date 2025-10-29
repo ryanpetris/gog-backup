@@ -1,0 +1,16 @@
+#!/bin/bash
+
+PKG_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="${PKG_PATH}/src:$PYTHONPATH"
+
+if [ -f "${PKG_PATH}/.env" ]; then
+    source "${PKG_PATH}/.env"
+fi
+
+exec python -c "$(cat <<EOF
+import sys
+from gog_backup.cli import gog_backup
+sys.argv = sys.argv[1:]
+gog_backup()
+EOF
+)" "$0" "$@"
