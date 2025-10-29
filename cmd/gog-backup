@@ -7,6 +7,10 @@ if [ -f "${PKG_PATH}/.env" ]; then
     source "${PKG_PATH}/.env"
 fi
 
+if [ -d "${PKG_PATH}/.venv" ]; then
+    source "${PKG_PATH}/.venv/bin/activate"
+fi
+
 exec python -c "$(cat <<EOF
 import sys
 from gog_backup.cli import gog_backup
