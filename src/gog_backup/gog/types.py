@@ -4,6 +4,7 @@ import os
 from dataclasses import dataclass
 from typing import List, Mapping
 
+from .env import GOG_SINGLE_LANGUAGE
 from ..common import sanitize_filename
 
 
@@ -37,7 +38,7 @@ class GogDownload:
 
         self.storage_path = sanitize_filename(self.game_title)
 
-        if self.language:
+        if self.language and not GOG_SINGLE_LANGUAGE:
             self.storage_path = os.path.join(self.storage_path, self.language)
 
         if self.platform:
@@ -49,7 +50,7 @@ class GogDownload:
             if self.game_subtitle:
                 self.storage_path = os.path.join(self.storage_path, sanitize_filename(self.game_subtitle))
 
-        elif self.version:
+        if self.version:
             self.storage_path = os.path.join(self.storage_path, self.version)
 
 

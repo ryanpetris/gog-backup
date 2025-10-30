@@ -7,6 +7,7 @@ from .env import (
     GOG_LANGUAGES,
     GOG_PLATFORMS,
     GOG_ARCHIVE_DIR,
+    GOG_SINGLE_LANGUAGE,
 )
 from .types import GogDownload, GogGame
 
@@ -18,5 +19,6 @@ __all__ = [
     'GOG_LANGUAGES',
     'GOG_PLATFORMS',
     'GOG_ARCHIVE_DIR',
+    'GOG_SINGLE_LANGUAGE',
     'get_downloads',
 ]
