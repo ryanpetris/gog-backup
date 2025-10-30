@@ -44,14 +44,14 @@ class GogDownload:
         if self.platform:
             self.storage_path = os.path.join(self.storage_path, self.platform)
 
+        if self.version:
+            self.storage_path = os.path.join(self.storage_path, self.version)
+
         if self.file_type:
             self.storage_path = os.path.join(self.storage_path, self.file_type)
 
             if self.game_subtitle:
                 self.storage_path = os.path.join(self.storage_path, sanitize_filename(self.game_subtitle))
-
-        if self.version:
-            self.storage_path = os.path.join(self.storage_path, self.version)
 
 
 @dataclass
