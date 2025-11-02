@@ -39,6 +39,7 @@ def get_overall_progress() -> Progress:
         TextColumn("[progress.description]{task.description}"),
         BarColumn(bar_width=None),
         TaskProgressColumn(),
+        TextColumn("{task.completed}/{task.total}"),
         TimeElapsedColumn(),
     )
 
