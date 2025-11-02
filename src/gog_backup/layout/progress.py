@@ -11,7 +11,7 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 
-from src.gog_backup.gog import GOG_SINGLE_LANGUAGE
+from ..gog import GOG_SINGLE_LANGUAGE
 
 
 def get_download_progress() -> Progress:
