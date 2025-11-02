@@ -1,26 +1,34 @@
 #!/usr/bin/env python3
 
-from rich.progress import Progress, TransferSpeedColumn, TextColumn
+from rich import Console
+from rich.console import Group
+from rich.live import Live
+from rich.panel import Panel
 
 from .common import RichDownloadTracker, BlockingThreadPool
-from .gog import get_downloads, GogApi, GOG_SINGLE_LANGUAGE
+from .gog import get_downloads, GogApi
+from .layout import get_download_progress, get_overall_progress
 
 
 def gog_backup():
     pool = BlockingThreadPool()
 
-    columns = (
-        TextColumn("{task.fields[title]}"),
-        TextColumn("{task.fields[subtitle]}"),
-        TextColumn("{task.fields[type]}"),
-        TextColumn("{task.fields[platform]}"),
-        TextColumn("{task.fields[language]}") if not GOG_SINGLE_LANGUAGE else None,
-        *Progress.get_default_columns(),
-        TransferSpeedColumn(),
+    console = Console()
+    download_progress = get_download_progress()
+    overall_progress = get_overall_progress()
+
+    live = Live(
+        Panel(
+            Group(
+                Panel(overall_progress, title="Progress"),
+                Panel(download_progress, title="Downloads"),
+            ),
+            title="[bold red]GOG Backup[/bold red]",
+        ),
+        console=console,
+        transient=True,
     )
 
-    columns = (x for x in columns if x is not None)
-
-    with Progress(*columns) as p:
-        for download in get_downloads():
-            pool.submit(GogApi.download_file, download, RichDownloadTracker(p))
+    with live:
+        for download in get_downloads(overall_progress):
+            pool.submit(GogApi.download_file, download, RichDownloadTracker(download_progress))
