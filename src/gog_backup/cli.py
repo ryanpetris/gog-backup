@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-from rich import Console
-from rich.console import Group
+from rich.console import Console, Group
 from rich.live import Live
 from rich.panel import Panel
 
