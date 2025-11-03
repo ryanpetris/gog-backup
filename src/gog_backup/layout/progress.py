@@ -2,6 +2,7 @@
 
 from typing import Optional
 
+from rich.markup import escape
 from rich.progress import (
     Progress,
     TextColumn,
@@ -37,17 +38,17 @@ class TaskDescriptionColumn(ProgressColumn):
         text_parts = []
 
         if file_type:
-            text_parts.append(f'[color blue]\[{file_type}][/color]')
+            text_parts.append(f'[color blue]\[{escape(file_type)}][/]')
 
         if platform:
-            text_parts.append(f'[color green]\[{platform}][/color]')
+            text_parts.append(f'[color green]\[{escape(platform)}][/]')
 
         if language and not GOG_SINGLE_LANGUAGE:
-            text_parts.append(f'[color red]\[{language}][/color]')
+            text_parts.append(f'[color red]\[{escape(language)}][/]')
 
-        text_parts.append(f'{title}')
-        text_parts.append(f'({subtitle})')
-        text_parts.append(f'{task.description}')
+        text_parts.append(escape(title))
+        text_parts.append(f'({escape(subtitle)})')
+        text_parts.append(escape(task.description))
 
         return Text.from_markup(" ".join(text_parts))
 
