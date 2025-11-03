@@ -47,8 +47,12 @@ class TaskDescriptionColumn(ProgressColumn):
             text_parts.append(f'[color red]\[{escape(language)}][/]')
 
         text_parts.append(escape(title))
-        text_parts.append(f'({escape(subtitle)})')
-        text_parts.append(escape(task.description))
+
+        if subtitle:
+            text_parts.append(f'({escape(subtitle)})')
+
+        if task.description:
+            text_parts.append(escape(task.description))
 
         return Text.from_markup(" ".join(text_parts))
 
