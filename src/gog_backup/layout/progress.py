@@ -26,14 +26,15 @@ class TaskDescriptionColumn(ProgressColumn):
         super().__init__(table_column=table_column or Column(no_wrap=True))
 
     def render(self, task: Task) -> Text:
-        title = task.fields.get("title")
-        subtitle = task.fields.get("subtitle")
-        file_type = task.fields.get("type")
-        platform = task.fields.get("platform")
-        language = task.fields.get("language")
+        title = (task.fields.get("title") or '').strip()
+        subtitle = (task.fields.get("subtitle") or '').strip()
+        file_type = (task.fields.get("type") or '').strip()
+        platform = (task.fields.get("platform") or '').strip()
+        language = (task.fields.get("language") or '').strip()
+        description = (task.description or '').strip()
 
-        if task.description.startswith(title):
-            task.description = task.description[len(title):].lstrip()
+        if description.startswith(title):
+            description = description[len(title):].strip()
 
         text_parts = []
 
@@ -51,8 +52,8 @@ class TaskDescriptionColumn(ProgressColumn):
         if subtitle:
             text_parts.append(f'({escape(subtitle)})')
 
-        if task.description:
-            text_parts.append(escape(task.description))
+        if description:
+            text_parts.append(escape(description))
 
         return Text.from_markup(" ".join(text_parts))
 
