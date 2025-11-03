@@ -31,3 +31,5 @@ def gog_backup():
     with live:
         for download in get_downloads(overall_progress):
             pool.submit(GogApi.download_file, download, RichDownloadTracker(download_progress))
+
+    pool.wait()
